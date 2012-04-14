@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra'
 require 'haml'
+require 'mongo'
 require 'mongoid'
 
 require './models/user'
@@ -12,7 +13,8 @@ Mongoid.configure do |config|
 end
 
 get '/' do
-  haml :container_app
+  topbar = haml :topbar
+  haml :container_app, {}, :topbar => topbar
 end
 
 get '/signup/failure' do

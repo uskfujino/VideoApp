@@ -2,37 +2,62 @@
 %html(lang="en")
   %head
     %title Bootstrap, from Twitter
-    %link{:rel => 'stylesheet', :href => '../bootstrap.css', :type => "text/css"}
-    %link{:rel => 'stylesheet', :href => '../launch.css', :type => "text/css"}
-
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
   %body
-    .topbar
-      .fill
-        .container
-          %a{:class => "brand", :href => ""}Project name
-          %ul(class="nav")
-            %li(class="active")
-              %a(href = "/") Home
-            %li
-              %a(href = "/about") About
-            %li
-              %a(href = "/") Contact
-            %li
-              %a(href = "/signup") Signup
+    = topbar
+    .container-fluid
+      .row-fluid
+        .span3
+          .well.sidebar-nav
+            %ul.nav.nav-list
+              %li.nav-header
+                Sidebar
+              %li.active
+                %a(href='/') Link
+              %li
+                %a(href='/signup') Link
+        .span9
+          .hero-unit
+            %h1 Hello, world!
+            %p
+              "This is a template for a simple marketing or ..."
+            %p
+              %a.btn.btn-primary.btn-large
+                Learn more >>
+          .row-fluid
+          .row-fluid
+    %footer
+      %p
+        (c) Company 2012
+    / .topbar
+    /   .fill
+    /     .container
+    /       %a{:class => "brand", :href => ""}Project name
+    /       %ul(class="nav")
+    /         %li(class="active")
+    /           %a(href = "/") Home
+    /         %li
+    /           %a(href = "/about") About
+    /         %li
+    /           %a(href = "/") Contact
+    /         %li
+    /           %a(href = "/signup") Signup
 
-    .container
-      .content
-        .page-header
-          <h1>Page name <small>Supporting text or tagline</small></h1>
-        .row
-          .span10
-            <h2>Main content</h2>
+    / .container
+    /   .content
+    /     .page-header
+    /       <h1>Page name <small>Supporting text or tagline</small></h1>
+    /     .row
+    /       .span10
+    /         <h2>Main content</h2>
 
-          .span4
-            <h3>Secondary content</h3>
+    /       .span4
+    /         <h3>Secondary content</h3>
 
-          
+    /       
 
 
-      %footer
-        <p>&copy; Company 2011</p>
+    /   %footer
+    /     <p>&copy; Company 2011</p>

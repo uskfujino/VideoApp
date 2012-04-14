@@ -1,13 +1,18 @@
-.topbar
-  .fill
-    .container
-      %a{:class => "brand", :href => ""}Project name
-      %ul(class="nav")
-        %li(class="active")
-          %a(href = "/") Home
-        %li
-          %a(href = "/about") About
-        %li
-          %a(href = "/") Contact
-        %li
-          %a(href = "/signup") Signup
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container-fluid
+      %a.btn.btn-navbar(data-toggle='collapse' data-target='.nav-collapse')
+      %a.brand(href='/') Test Bootstrap
+      .nav-collapse
+        %ul.nav
+          %li
+            %a(href='/') Home
+          %li
+            %a(href='/signup') Signup
+          %li
+            %a(href='/about') About
+          %li
+            %a(href='/contact') Contact
+        %p.navbar-text.pull-right
+          Logged in as 
+          %a(href='/') username

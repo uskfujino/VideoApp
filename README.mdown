@@ -1,18 +1,5 @@
-Twitter has released a very helpful toolkit recently called [Bootstrap](http://twitter.github.com/bootstrap/): 
+Sinatra + Mongodb + Bootstrap + Haml のテスト用プロジェクトです。
 
->  "Bootstrap is a toolkit from Twitter designed to kickstart development of webapps and sites. 
-It includes base CSS and HTML for typography, forms, buttons, tables, grids, navigation, and more."
-
-I like using [Sinatra](http://www.sinatrarb.com/) for getting Ruby apps up and running quickly and thought it would be nice if I could marry 
-Sinatra and Bootstrap together.  Sinatra allows for a number of template languages, but I tend to use Haml. 
-I adapted one of the Bootstrap quick-start templates to Haml and thought I'd share it. If I get time I'll do the others as well.
-
-One thing to note: each quick-start template references the bootstrap.css, but also includes a fair bit of additional 
-styling in between <style></style> tags. I moved this all to an external stylesheet, launch.css.
-
-## Instructions
-
-### Prep
 rvm use 1.9.2
 
 rvm gemset create bootstrap-haml
@@ -23,9 +10,10 @@ gem install sinatra
 
 gem install haml
 
+gem install mongoid
 
-### Run Sinatra
+### Sinatraを実行
 ruby -rubygems app.rb 
 
-### View template
+### 確認
 http://localhost:4567/
