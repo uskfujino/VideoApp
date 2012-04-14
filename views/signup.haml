@@ -1,0 +1,22 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Signup
+    %link{:rel => 'stylesheet', :href => '../bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../launch.css', :type => "text/css"}
+
+  %body
+    %h=topbar
+    .fill
+      .container
+        - if error_message != ''
+          .content
+            %h2=error_message
+        .content
+          %form.post(action='/signup/confirm' method='post')
+            %input(name='post[user_id]' type='text')
+            %input(name='post[user_name]' type='text')
+            %input(type='submit' value='Register')
+        .content
+          %footer
+            <p>&copy; Company 2011</p>
