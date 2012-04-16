@@ -50,6 +50,7 @@ DEPENDENCIES
   activerecord
   bson_ext
   haml
+  mongo
   mongoid
   pusher
   sinatra

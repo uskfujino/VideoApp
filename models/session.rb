@@ -1,4 +1,4 @@
-require 'rubygems'
+#require 'rubygems'
 require 'active_record'
 
 class Session < ActiveRecord::Base

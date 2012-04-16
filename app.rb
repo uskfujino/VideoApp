@@ -1,10 +1,3 @@
-require 'rubygems'
-require 'sinatra'
-require 'haml'
-require 'mongo'
-require 'mongoid'
-require 'pusher'
-
 require './models/user'
 require './models/session'
 
@@ -21,9 +14,9 @@ Pusher.secret = 'a018238daee0c9d722e6'
 class MySinatraApp < Sinatra::Base
   get '/' do
     topbar = haml :topbar
-    haml :container_app, {}, :topbar => topbar
+    haml :container_app, {}, :topbar => topbar, :pusher_key => Pusher.key
   end
-  
+
   get '/signup/failure' do
     topbar = haml :topbar
     haml :signup, {}, :error_message => 'Input Data is incorrect.', :topbar => topbar
@@ -55,8 +48,13 @@ class MySinatraApp < Sinatra::Base
   end
   
   get '/test_pusher' do
-    Pusher['my-channel'].trigger('my-event', {:message => 'hello world'})
+    Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
     topbar = haml :topbar
-    haml :container_app, {}, :topbar => topbar
+    haml :container_app, {}, :topbar => topbar, :pusher_key => Pusher.key
+  end
+
+  # 無効なパスはすべてルートへ転送
+  get '/*' do
+    redirect '/'
   end
 end
