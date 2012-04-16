@@ -5,8 +5,15 @@
     %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
     %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
     %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %link{:rel => 'javascript', :href => 'http://js.pusher.com/1.11/pusher.min.js', :type => "text/javascript"}
   %body
     = topbar
+    :javascript
+      var pusher = new Pusher('651405108b80e1c1ace7')
+      var channel = pusher.subscribe('my-channel')
+      channel.bind('my-event', function(data) {
+        alert('An event was triggerd with message: ' + data.message);
+      });
     .container-fluid
       .row-fluid
         .span3

@@ -1,0 +1,7 @@
+source "http://rubygems.org"
+gem "sinatra"
+gem "activerecord"
+gem "haml"
+gem "mongoid"
+gem "pusher"
+gem "bson_ext"

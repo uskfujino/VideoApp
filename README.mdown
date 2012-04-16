@@ -6,14 +6,8 @@ rvm gemset create bootstrap-haml
 
 rvm gemset use bootstrap-haml
 
-gem install sinatra
+gem install bundle
 
-gem install haml
+bundle install
 
-gem install mongoid
-
-### Sinatraを実行
-ruby -rubygems app.rb 
-
-### 確認
-http://localhost:4567/
+rackup
