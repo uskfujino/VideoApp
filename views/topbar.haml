@@ -14,5 +14,8 @@
           %li
             %a(href='/contact') Contact
         %p.navbar-text.pull-right
+        - if twitter_user_name != nil
           Logged in as 
-          %a(href='/') username
+          %a(href='/')= twitter_user_name
+        - else
+          %a(href='/auth/twitter') Login with twitter account

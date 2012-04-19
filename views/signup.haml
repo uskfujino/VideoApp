@@ -32,8 +32,15 @@
                 .form-actions
                   %button.btn.btn-primary(type='submit') Submit
           .span4
+            %a(href="/auth/twitter") Signup with twitter
             - if error_message != ''
               %h2=error_message
+            %form
+              .form-actions
+                %button.btn.btn-primary(onClick="/auth/twitter") Sign with Twitter
+          /  %form.post(action='/auth/twitter' method='get')
+          /    .form-actions
+          /      %button.btn.btn-primary(type='submit') Sign in with Twitter
 /    .fill
 /      .container
 /        - if error_message != ''
