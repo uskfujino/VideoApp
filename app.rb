@@ -7,9 +7,9 @@ Mongoid.configure do |config|
 end
 
 # Pusher設定
-Pusher.app_id = '18646'
-Pusher.key = '651405108b80e1c1ace7'
-Pusher.secret = 'a018238daee0c9d722e6'
+Pusher.app_id = ENV['PUSHER_APP_ID']
+Pusher.key = ENV['PUSHER_APP_KEY']
+Pusher.secret = ENV['PUSHER_APP_SECRET']
 
 class MySinatraApp < Sinatra::Base
   get '/' do
