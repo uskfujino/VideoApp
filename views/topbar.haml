@@ -13,9 +13,25 @@
             %a(href='/about') About
           %li
             %a(href='/contact') Contact
-        %p.navbar-text.pull-right
+          - if twitter_user_name != nil
+            %li
+              %a(href='/logout') Logout
         - if twitter_user_name != nil
-          Logged in as 
-          %a(href='/')= twitter_user_name
-        - else
-          %a(href='/auth/twitter') Login with twitter account
+          %ul.nav.pull-right
+            %li.divider-vertical
+            =dropdown
+            /%li.dropdown.open
+            /  %a.dropdown-toggle(href='#' data-toggle='dropdown')
+            /    My Menu
+            /    %b.caret
+            /  %ul.dropdown-menu
+            /    %li
+            /      %a(href='/') Menu1
+            /    %li
+            /      %a(href='/') Menu2
+        %p.navbar-text.pull-right
+          - if twitter_user_name != nil
+            Logged in as
+            %a(href='/')= twitter_user_name
+          - else
+            %a(href='/auth/twitter') Login with twitter account

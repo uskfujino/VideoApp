@@ -30,22 +30,61 @@ class MySinatraApp < Sinatra::Base
   end
 
   get '/' do
-    topbar = haml :topbar, {}, :twitter_user_name => session['twitter_user_name']
-    haml :container_app, {}, :topbar => topbar, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
+    haml :container_app, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
   end
 
+  #get '/#' do
+  #  DebugLog.info '/# called'
+  #  haml :container_app, {}, :topbar => create_topbar_opened, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
+  #end
+  
   # Twitter認証成功時に呼ばれる
   get '/auth/twitter/callback' do
-    session['twitter_user_name'] = request.env['omniauth.auth']
     auth = request.env['omniauth.auth']
     session['twitter_user_name'] = auth['info']['nickname']
+    session['twitter_user_id'] = auth['uid']
     #login(auth_hash)
+    if logged_in?
+      DebugLog.info "Logged in!"
+    end
+    redirect '/'
+  end
+
+  def logout
+    session['twitter_user_name'] = nil
+    session['twitter_user_id'] = nil
+  end
+
+  def logged_in?
+    session['twitter_user_name'] != nil && session['twitter_user_id'] != nil
+  end
+
+  def create_topbar_closed
+    create_topbar(false)
+  end
+  
+  def create_topbar_opened
+    DebugLog.info 'create_topbar_opened called'
+    create_topbar(true)
+  end
+
+  def create_topbar(dropdown_opened)
+    if dropdown_opened == true
+      DebugLog.info "dropdown opened"
+    else
+      DebugLog.info "dropdown closed"
+    end
+    dropdown = haml :dropdown, {}, :opened => dropdown_opened
+    haml :topbar, {}, :twitter_user_name => session['twitter_user_name'], :dropdown => dropdown
+  end
+  
+  get '/logout' do
+    logout
     redirect '/'
   end
 
   get '/signup/failure' do
-    topbar = haml :topbar, {}, :twitter_user_name => session['twitter_user_name']
-    haml :signup, {}, :error_message => 'Input Data is incorrect.', :topbar => topbar
+    haml :signup, {}, :error_message => 'Input Data is incorrect.', :topbar => create_topbar_closed
   end
   
   post '/signup/confirm' do
@@ -54,13 +93,9 @@ class MySinatraApp < Sinatra::Base
   
     if user_id == '' || user_id == nil
       redirect '/signup/failure'
-      #haml :signup, {}, :error_message => 'User%20ID%20is%20Blank'
-      #return
     end
     if user_name == '' || user_name == nil
       redirect '/signup/failure'
-      #haml :signup, {}, :error_message => 'User%20Name%20is%20Blank'
-      #return
     end
     
     User.create(login_id: user_id, name: user_name)
@@ -69,18 +104,17 @@ class MySinatraApp < Sinatra::Base
   end
   
   get '/signup' do
-    topbar = haml :topbar, {}, :twitter_user_name => session['twitter_user_name']
-    haml :signup, {}, :error_message => '', :topbar => topbar
+    haml :signup, {}, :error_message => '', :topbar => create_topbar_closed
   end
   
   get '/test_pusher' do
     Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
-    topbar = haml :topbar, {}, :twitter_user_name => session['twitter_user_name']
-    haml :container_app, {}, :topbar => topbar, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
+    haml :container_app, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
   end
 
   # 無効なパスはすべてルートへ転送
-  get '/*' do
-    redirect '/'
-  end
+  #get '/*' do
+  #  DebugLog.info '/* called'
+  #  redirect '/'
+  #end
 end

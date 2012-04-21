@@ -1,0 +1,20 @@
+:javascript
+  function changeDropDown() {
+    try {
+      $('.dropdown-toggle').dropdown();
+    } catch (ex) {
+      alert(ex);
+    }
+  }
+%li.dropdown
+  %a.dropdown-toggle(href='#' data-toggle='dropdown' onClick='changeDropDown()')
+    My Menu
+    %b.caret
+  %ul.dropdown-menu
+    %li
+      %a menu1
+    %li
+      %a menu2
+    %li.divider
+    %li
+      %a menu3
