@@ -1,4 +1,5 @@
 require './models/user'
+require './models/tweet'
 require './models/session'
 require 'logger'
 require 'pp'
@@ -30,14 +31,13 @@ class MySinatraApp < Sinatra::Base
   end
 
   get '/' do
-    haml :container_app, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
+    if logged_in? && Tweet.exists?
+      tweets = Tweet.where(user_id: session['twitter_user_name']).all
+    end
+
+    haml :main, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name'], :tweets => tweets
   end
 
-  #get '/#' do
-  #  DebugLog.info '/# called'
-  #  haml :container_app, {}, :topbar => create_topbar_opened, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
-  #end
-  
   # Twitter認証成功時に呼ばれる
   get '/auth/twitter/callback' do
     auth = request.env['omniauth.auth']
@@ -83,6 +83,24 @@ class MySinatraApp < Sinatra::Base
     redirect '/'
   end
 
+  post '/tweet' do
+    if !logged_in?
+      redirect '/'
+    end
+
+    tweet = params[:post][:tweet]
+
+    if tweet == '' || tweet == nil
+      redirect '/'
+    end
+
+    DebugLog.info "before create"
+    Tweet.create(user_id: session['twitter_user_name'], message: tweet)
+    DebugLog.info "after create"
+
+    redirect '/'
+  end
+
   get '/signup/failure' do
     haml :signup, {}, :error_message => 'Input Data is incorrect.', :topbar => create_topbar_closed
   end
@@ -109,7 +127,7 @@ class MySinatraApp < Sinatra::Base
   
   get '/test_pusher' do
     Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
-    haml :container_app, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
+    haml :main, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
   end
 
   # 無効なパスはすべてルートへ転送
