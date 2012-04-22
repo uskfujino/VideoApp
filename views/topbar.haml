@@ -1,7 +1,7 @@
 .navbar.navbar-fixed-top
   .navbar-inner
     .container-fluid
-      %a.btn.btn-navbar(data-toggle='collapse' data-target='.nav-collapse')
+      /%a.btn.btn-navbar(data-toggle='collapse' data-target='.nav-collapse')
       %a.brand(href='/') Test Bootstrap
       .nav-collapse
         %ul.nav
@@ -13,25 +13,16 @@
             %a(href='/about') About
           %li
             %a(href='/contact') Contact
-          - if twitter_user_name != nil
+          - if nickname != nil
             %li
               %a(href='/logout') Logout
-        - if twitter_user_name != nil
-          %ul.nav.pull-right
-            %li.divider-vertical
+        - if nickname != nil
+          %ul.nav.pull-left
             =dropdown
-            /%li.dropdown.open
-            /  %a.dropdown-toggle(href='#' data-toggle='dropdown')
-            /    My Menu
-            /    %b.caret
-            /  %ul.dropdown-menu
-            /    %li
-            /      %a(href='/') Menu1
-            /    %li
-            /      %a(href='/') Menu2
-        %p.navbar-text.pull-right
-          - if twitter_user_name != nil
-            Logged in as
-            %a(href='/')= twitter_user_name
-          - else
-            %a(href='/auth/twitter') Login with twitter account
+        - else
+          /%a.btn.btn-primary.pull-right(href='/auth/twitter' style='margin-right: 30px')
+          %a.btn.btn-primary.pull-right(href='/auth/twitter')
+            %i.icon-user.icon-white
+            Sign in with twitter account
+          /%p.navbar-text.pull-right
+          /  %a(href='/auth/twitter') Login with twitter account

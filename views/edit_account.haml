@@ -1,0 +1,32 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Edit User Data
+    %link{:rel => 'stylesheet', :href => '/css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '/css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '/css/mydocs.css', :type => "text/css"}
+    %script(src='http://js.pusher.com/1.11/pusher.min.js')
+    %script(src='/js/jquery.js')
+    %script(src='/js/bootstrap.js')
+  %body
+    = topbar
+    .container
+      %section(id='forms')
+        .page-header
+          %h1 Edit your data
+          %small For, you guessed it
+        %h2 Horizontal Forms
+        .row
+          .span8
+            %form.form-horizontal.post(action='/users/#{user_id}' method='post')
+              %fieldset
+                %legend Inputs
+                .control-group
+                  %label.control-label(for='nickname') Your Name :
+                  .controls
+                    %input.input-xlarge(id='nickname' name='put[nickname]' type='text' placeholder='#{nickname}')
+                    %input(name='_method' type='hidden' value='put')
+                    %p.help-block
+                      Input your nickname above
+                .form-actions
+                  %button.btn.btn-primary(type='submit') Update

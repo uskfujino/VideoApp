@@ -1,20 +1,20 @@
-:javascript
-  function changeDropDown() {
-    try {
-      $('.dropdown-toggle').dropdown();
-    } catch (ex) {
-      alert(ex);
-    }
-  }
-%li.dropdown
-  %a.dropdown-toggle(href='#' data-toggle='dropdown' onClick='changeDropDown()')
-    My Menu
-    %b.caret
+.btn-group
+  %a.btn.btn-primary(href='#')
+    %i.icon-user.icon-white
+    = nickname
+  %a.btn.btn-primary.dropdown-toggle(data-toggle='dropdown' href='#')
+    %span.caret
   %ul.dropdown-menu
     %li
-      %a menu1
+      %a(href='/users/#{user_id}/edit#')
+        %i.icon-pencil
+        Edit
     %li
-      %a menu2
+      %a(href='#')
+        %i.icon-trash
+        Delete
     %li.divider
     %li
-      %a menu3
+      %a(href='/logout')
+        %i.icon-off
+        Sign out

@@ -10,6 +10,9 @@ DebugLog = Logger.new('debug.log')
 DebugLog.info "debug.log created"
 
 class MySinatraApp < Sinatra::Base
+  # enable _method hack
+  set :method_override, true
+
   use Rack::Session::Cookie,
   #  :key => 'rack.session',
   #  :domain => 'localhost',
@@ -22,12 +25,42 @@ class MySinatraApp < Sinatra::Base
     provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
   end
 
-  get '/' do
-    if logged_in? && Tweet.exists?
-      tweets = Tweet.where(user_id: session['twitter_user_name']).all
+  def find_nickname
+    user = find_user
+    
+    if user
+      user.name
+    elsif logged_in?
+      session['twitter_user_name']
+    else
+      nil
     end
+  end
 
-    haml :main, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name'], :tweets => tweets
+  def find_user
+    if logged_in? && User.exists?
+      return User.where(login_id: session['twitter_user_id']).first
+    else
+      nil
+    end
+  end
+
+  def create_user(nickname)
+    if logged_in?
+      User.create(login_id: session['twitter_user_id'], name: nickname)
+    end
+  end
+
+  def find_tweets
+    if logged_in? && Tweet.exists?
+      Tweet.where(user_id: session['twitter_user_id']).all
+    else
+      nil
+    end
+  end
+
+  get '/' do
+    haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets
   end
 
   # Twitter認証成功時に呼ばれる
@@ -35,10 +68,6 @@ class MySinatraApp < Sinatra::Base
     auth = request.env['omniauth.auth']
     session['twitter_user_name'] = auth['info']['nickname']
     session['twitter_user_id'] = auth['uid']
-    #login(auth_hash)
-    if logged_in?
-      DebugLog.info "Logged in!"
-    end
     redirect '/'
   end
 
@@ -51,28 +80,49 @@ class MySinatraApp < Sinatra::Base
     session['twitter_user_name'] != nil && session['twitter_user_id'] != nil
   end
 
-  def create_topbar_closed
-    create_topbar(false)
-  end
-  
-  def create_topbar_opened
-    DebugLog.info 'create_topbar_opened called'
-    create_topbar(true)
-  end
-
-  def create_topbar(dropdown_opened)
-    if dropdown_opened == true
-      DebugLog.info "dropdown opened"
-    else
-      DebugLog.info "dropdown closed"
-    end
-    dropdown = haml :dropdown, {}, :opened => dropdown_opened
-    haml :topbar, {}, :twitter_user_name => session['twitter_user_name'], :dropdown => dropdown
+  def create_topbar
+    dropdown = haml :dropdown, {}, :nickname => find_nickname, :user_id => session['twitter_user_id']
+    haml :topbar, {}, :nickname => find_nickname, :dropdown => dropdown
   end
   
   get '/logout' do
     logout
     redirect '/'
+  end
+
+  get '/users/*/edit' do
+    if logged_in?
+      haml :edit_account, {}, :topbar => create_topbar, :user_id => session['twitter_user_id'], :nickname => find_nickname
+    else
+      redirect '/'
+    end
+  end
+
+  put '/users/:user_id' do
+    user_id = params[:user_id]
+    redirect_url = "/users/#{user_id}/edit"
+
+    if !logged_in? || user_id != session['twitter_user_id']
+      redirect redirect_url
+    end
+
+    nickname = request['put']['nickname']
+
+    if !nickname
+      redirect redirect_url
+    end
+
+    user = find_user
+
+    if user
+      user.name = nickname
+    else
+      user = create_user(nickname)
+    end
+
+    user.save
+
+    redirect redirect_url
   end
 
   post '/tweet' do
@@ -86,45 +136,19 @@ class MySinatraApp < Sinatra::Base
       redirect '/'
     end
 
-    DebugLog.info "before create"
-    Tweet.create(user_id: session['twitter_user_name'], message: tweet)
-    DebugLog.info "after create"
+    Tweet.create(user_id: session['twitter_user_id'], message: tweet)
 
     redirect '/'
   end
 
-  get '/signup/failure' do
-    haml :signup, {}, :error_message => 'Input Data is incorrect.', :topbar => create_topbar_closed
-  end
-  
-  post '/signup/confirm' do
-    user_id = params[:post][:user_id]
-    user_name = params[:post][:user_name]
-  
-    if user_id == '' || user_id == nil
-      redirect '/signup/failure'
-    end
-    if user_name == '' || user_name == nil
-      redirect '/signup/failure'
-    end
-    
-    User.create(login_id: user_id, name: user_name)
-  
-    redirect '/'
-  end
-  
-  get '/signup' do
-    haml :signup, {}, :error_message => '', :topbar => create_topbar_closed
-  end
-  
   get '/test_pusher' do
     Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
-    haml :main, {}, :topbar => create_topbar_closed, :pusher_key => Pusher.key, :twitter_user_name => session['twitter_user_name']
+    haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets
   end
 
   # 無効なパスはすべてルートへ転送
-  #get '/*' do
-  #  DebugLog.info '/* called'
-  #  redirect '/'
-  #end
+  get '/*' do
+    put '#Unknown url get'
+    redirect '/'
+  end
 end
