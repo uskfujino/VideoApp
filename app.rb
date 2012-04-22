@@ -1,3 +1,5 @@
+require './config/initializers/mongodb'
+require './config/initializers/pusher'
 require './models/user'
 require './models/tweet'
 require './models/session'
@@ -6,26 +8,6 @@ require 'pp'
 
 DebugLog = Logger.new('debug.log')
 DebugLog.info "debug.log created"
-
-# Mongoid設定
-Mongoid.configure do |config|
-  mongohq_url = ENV['MONGOHQ_URL']
-  mongohq_db_name = ENV['MONGOHQ_DB']
-
-  if mongohq_url && mongohq_db_name
-    puts "MongoHQ Started"
-    conn = Mongo::Connection.from_uri(mongohq_url)
-    config.master = conn.db(mongohq_db_name)
-  else
-    puts "Local MongoDB Started"
-    config.master = Mongo::Connection.new.db('bootstrap_haml')
-  end
-end
-
-# Pusher設定
-Pusher.app_id = ENV['PUSHER_APP_ID']
-Pusher.key = ENV['PUSHER_APP_KEY']
-Pusher.secret = ENV['PUSHER_APP_SECRET']
 
 class MySinatraApp < Sinatra::Base
   use Rack::Session::Cookie,
