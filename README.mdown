@@ -6,7 +6,7 @@ rvm gemset create bootstrap-haml
 
 rvm gemset use bootstrap-haml
 
-gem install bundle
+gem install bundler --pre
 
 bundle install
 
