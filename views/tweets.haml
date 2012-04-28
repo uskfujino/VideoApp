@@ -1,0 +1,26 @@
+- if tweets
+  %h3 Tweets
+  %table.table.table-striped
+    %tbody
+      - tweets.each do |tweet|
+        :javascript
+          function deleteTweet() {
+            document.delete_tweet_form.submit();
+          }
+        %form(name='delete_tweet_form' method='post' action='/tweet/#{tweet.id}')
+          %input(type='hidden' name='_method' value='delete')
+        %tr
+          %td
+            %h4.pull-left=tweet.user_name
+            .dropdown.pull-right
+              %a.dropdown-toggle(data-toggle='dropdown' href='#')
+                &nbsp;
+                %i.icon-edit
+              %ul.dropdown-menu
+                %li
+                  %a(href='#' onClick='deleteTweet()')
+                    %i.icon-trash
+                    &nbsp;Delete
+            %h4.pull-right= tweet.time.strftime('%a %b %d %X %Y')
+            %br
+            %h3= tweet.message
