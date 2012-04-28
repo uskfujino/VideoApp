@@ -79,10 +79,7 @@
                   $('#myTooltip').tooltip('show')
                 }
         .span3
-          - if tweets
-            %h4 Your Tweets
-            - tweets.each do |tweet|
-              %p= tweet.message 
+          = tweet_page
     %footer
       %p
         (c) Company 2012

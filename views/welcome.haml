@@ -1,0 +1,18 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Bootstrap, from Twitter
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %script(src='http://js.pusher.com/1.11/pusher.min.js')
+    %script(src='../js/jquery.js')
+    %script(src='../js/bootstrap.js')
+  %body
+    = topbar
+    /.container-fluid
+    .container
+      .row-fluid
+        .span4
+          = tweet_page
+    %footer

@@ -52,15 +52,47 @@ class MySinatraApp < Sinatra::Base
   end
 
   def find_tweets
-    if logged_in? && Tweet.exists?
+    if !Tweet.exists?
+      nil
+    elsif logged_in?
       Tweet.where(user_id: session['twitter_user_id']).all
     else
-      nil
+      Tweet.all
+    end
+  end
+
+  def find_tweet(id)
+    if !Tweet.exists?
+      return nil
+    end
+
+    Tweet.find(id)
+  end
+
+  def my_tweet?(tweet)
+    if !logged_in? || tweet == nil
+      false
+    else
+      tweet.user_id == session['twitter_user_id']
+    end
+  end
+
+  def delete_tweet(id)
+    tweet = find_tweet(id)
+
+    if my_tweet? tweet
+      tweet.delete
     end
   end
 
   get '/' do
-    haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets
+    tweet_page = haml :tweets, {}, :tweets => find_tweets
+
+    if logged_in?
+      haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweet_page => tweet_page, :nickname => find_nickname
+    else
+      haml :welcome, {}, :topbar => create_topbar, :tweet_page => tweet_page
+    end
   end
 
   # Twitter認証成功時に呼ばれる
@@ -136,19 +168,25 @@ class MySinatraApp < Sinatra::Base
       redirect '/'
     end
 
-    Tweet.create(user_id: session['twitter_user_id'], message: tweet)
+    Tweet.create(user_id: session['twitter_user_id'], user_name: session['twitter_user_name'], time: Time.now, message: tweet)
 
+    redirect '/'
+  end
+
+  delete '/tweet/:id' do
+    puts 'delete /tweet/:id called'
+    delete_tweet(params[:id])
     redirect '/'
   end
 
   get '/test_pusher' do
     Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
-    haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets
+    haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets, :nickname => find_nickname
   end
 
   # 無効なパスはすべてルートへ転送
   get '/*' do
-    put '#Unknown url get'
+    puts '#Unknown url get'
     redirect '/'
   end
 end

@@ -11,22 +11,20 @@
   %body
     = topbar
     .container
-      %section(id='forms')
-        .page-header
-          %h1 Edit your data
-          %small For, you guessed it
-        %h2 Horizontal Forms
-        .row
-          .span8
-            %form.form-horizontal.post(action='/users/#{user_id}' method='post')
-              %fieldset
-                %legend Inputs
-                .control-group
-                  %label.control-label(for='nickname') Your Name :
-                  .controls
-                    %input.input-xlarge(id='nickname' name='put[nickname]' type='text' placeholder='#{nickname}')
-                    %input(name='_method' type='hidden' value='put')
-                    %p.help-block
-                      Input your nickname above
-                .form-actions
-                  %button.btn.btn-primary(type='submit') Update
+      .page-header
+        %h1 Edit your data
+        /%small For, you guessed it
+      .row
+        .span8
+          %form.form-horizontal.post(action='/users/#{user_id}' method='post')
+            %fieldset
+              /%legend Inputs
+              .control-group
+                %label.control-label(for='nickname') Nickname :
+                .controls
+                  %input.input-xlarge(id='nickname' name='put[nickname]' type='text' placeholder='#{nickname}')
+                  %input(name='_method' type='hidden' value='put')
+                  %p.help-block
+                    Input your nickname above
+              .form-actions
+                %button.btn.btn-primary(type='submit') Update
