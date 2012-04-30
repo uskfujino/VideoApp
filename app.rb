@@ -25,6 +25,13 @@ class MySinatraApp < Sinatra::Base
     provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
   end
 
+  helpers do
+    include Rack::Utils
+    alias_method :h, :escape_html
+
+    require './helpers/util'
+  end
+
   def find_nickname
     user = find_user
     
