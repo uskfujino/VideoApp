@@ -29,6 +29,15 @@ class MainApp < Sinatra::Base
     include Rack::Utils
     alias_method :h, :escape_html
 
+    def project_name
+      'Sandbox Apps'
+    end
+
+    def topbar
+      dropdown = haml :dropdown, {}, :nickname => find_nickname, :user_id => session['twitter_user_id']
+      haml :topbar, {}, :nickname => find_nickname, :dropdown => dropdown
+    end
+
     require './helpers/util'
   end
 
@@ -96,9 +105,9 @@ class MainApp < Sinatra::Base
     tweet_page = haml :tweets, {}, :tweets => find_tweets
 
     if logged_in?
-      haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweet_page => tweet_page, :nickname => find_nickname
+      haml :main, {}, :pusher_key => Pusher.key, :tweet_page => tweet_page, :nickname => find_nickname
     else
-      haml :welcome, {}, :topbar => create_topbar, :tweet_page => tweet_page
+      haml :welcome, {}, :tweet_page => tweet_page
     end
   end
 
@@ -119,11 +128,6 @@ class MainApp < Sinatra::Base
     session['twitter_user_name'] != nil && session['twitter_user_id'] != nil
   end
 
-  def create_topbar
-    dropdown = haml :dropdown, {}, :nickname => find_nickname, :user_id => session['twitter_user_id']
-    haml :topbar, {}, :nickname => find_nickname, :dropdown => dropdown
-  end
-  
   get '/logout' do
     logout
     redirect '/'
@@ -131,7 +135,7 @@ class MainApp < Sinatra::Base
 
   get '/users/*/edit' do
     if logged_in?
-      haml :edit_account, {}, :topbar => create_topbar, :user_id => session['twitter_user_id'], :nickname => find_nickname
+      haml :edit_account, {}, :user_id => session['twitter_user_id'], :nickname => find_nickname
     else
       redirect '/'
     end
@@ -188,11 +192,11 @@ class MainApp < Sinatra::Base
 
   get '/test_pusher' do
     Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
-    haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets, :nickname => find_nickname
+    haml :main, {}, :pusher_key => Pusher.key, :tweets => find_tweets, :nickname => find_nickname
   end
 
   get '/canvas' do
-    haml :play_canvas, {}, :topbar => create_topbar
+    haml :play_canvas
   end
 
   # 無効なパスはすべてルートへ転送
