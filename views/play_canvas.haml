@@ -1,0 +1,20 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Bootstrap, from Twitter
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %script(src='http://js.pusher.com/1.11/pusher.min.js')
+    %script(src='../js/jquery.js')
+    %script(src='../js/bootstrap.js')
+    %script(src='assets/test_canvas.js')
+  %body
+    = topbar
+    .container
+      .row
+        .span6
+          %canvas(id='canvas')
+          %br
+          %button.btn.btn-primary(style='margin-top: 5px' onclick='clearCanvas();') Clear
+    %footer

@@ -1,5 +1,5 @@
 require './config/initializers/mongodb'
-require './config/initializers/pusher'
+#require './config/initializers/pusher'
 require './models/user'
 require './models/tweet'
 require './models/session'
@@ -9,7 +9,7 @@ require 'pp'
 DebugLog = Logger.new('debug.log')
 DebugLog.info "debug.log created"
 
-class MySinatraApp < Sinatra::Base
+class MainApp < Sinatra::Base
   # enable _method hack
   set :method_override, true
 
@@ -189,6 +189,10 @@ class MySinatraApp < Sinatra::Base
   get '/test_pusher' do
     Pusher['my_channel'].trigger('my_event', {:message => 'hello world'})
     haml :main, {}, :topbar => create_topbar, :pusher_key => Pusher.key, :tweets => find_tweets, :nickname => find_nickname
+  end
+
+  get '/canvas' do
+    haml :play_canvas, {}, :topbar => create_topbar
   end
 
   # 無効なパスはすべてルートへ転送
