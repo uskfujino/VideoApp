@@ -199,6 +199,10 @@ class MainApp < Sinatra::Base
     haml :play_canvas
   end
 
+  get '/camera' do
+    haml :play_camera
+  end
+
   # 無効なパスはすべてルートへ転送
   get '/*' do
     puts '#Unknown url get'

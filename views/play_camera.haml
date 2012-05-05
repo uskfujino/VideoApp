@@ -1,0 +1,26 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Camera
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %script(src='http://js.pusher.com/1.11/pusher.min.js')
+    %script(src='../js/jquery.js')
+    %script(src='../js/bootstrap.js')
+    %script(src='assets/test_camera.js')
+  %body
+    = topbar
+    .container
+      .row
+        .span6
+          %canvas(id='screen')
+          %br
+          %button.btn.btn-primary(style='margin-top: 5px' onclick='mirrorHorizontally()') Reverse
+          /%button.btn.btn-primary(style='margin-top: 5px' onclick='snap();') Snap
+          /%button.btn.btn-primary(style='margin-top: 5px' onclick="$('v').play();") Play
+          /%button.btn.btn-primary(style='margin-top: 5px' onclick="test_play();") Play
+          /%button.btn.btn-primary(style='margin-top: 5px' onclick="document._video.play()") Play
+          /%video(autoplay)
+          %video(autoplay style='display:none')
+    %footer
