@@ -1,0 +1,26 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Google Picker Test
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %script(src='../js/jquery.js')
+    %script(src='../js/bootstrap.js')
+    %script(src='http://www.google.com/jsapi?key=AIzaSyCtl14CDcl4aa5Xj1QrdS13lERCtdx89ys')
+    %script(src='assets/test_drive.js')
+    :javascript
+      try {
+        showGooglePicker();
+        //google.setOnLoadCallback(createPicker);
+        //google.load('picker', '1');
+      } catch (ex) {
+        alert(ex);
+      }
+  %body
+    = topbar
+    .container
+      .row
+        .span6(id='result')
+          /%button.btn.btn-primary(style='margin-top: 5px' onclick='test_openFile();') Open File
+    %footer

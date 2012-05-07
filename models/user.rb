@@ -3,4 +3,5 @@ class User
 
   field :login_id, type: String
   field :name, type: String
+  #field :auth, type: Hash
 end

@@ -3,6 +3,7 @@ require './config/initializers/mongodb'
 require './models/user'
 require './models/tweet'
 require './models/session'
+require 'dropbox_sdk'
 require 'logger'
 require 'pp'
 
@@ -23,6 +24,8 @@ class MainApp < Sinatra::Base
   #use OmniAuth::Strategies::Developer
   use OmniAuth::Builder do
     provider :twitter, ENV['TWITTER_CONSUMER_KEY'], ENV['TWITTER_CONSUMER_SECRET']
+    provider :google_oauth2, ENV['GOOGLE_OAUTH2_KEY'], ENV['GOOGLE_OAUTH2_SECRET'], {:scope => 'userinfo.email,userinfo.profile,drive.file'}
+    provider :dropbox, ENV['DROPBOX_APP_KEY'], ENV['DROPBOX_APP_SECRET']
   end
 
   helpers do
@@ -34,8 +37,9 @@ class MainApp < Sinatra::Base
     end
 
     def topbar
-      dropdown = haml :dropdown, {}, :nickname => find_nickname, :user_id => session['twitter_user_id']
-      haml :topbar, {}, :nickname => find_nickname, :dropdown => dropdown
+      dropdown = haml :dropdown, {}, :nickname => find_nickname, :user_id => session['uid']
+      signin_dropdown = haml :signin_dropdown
+      haml :topbar, {}, :nickname => find_nickname, :dropdown => dropdown, :signin_dropdown => signin_dropdown
     end
 
     require './helpers/util'
@@ -47,7 +51,7 @@ class MainApp < Sinatra::Base
     if user
       user.name
     elsif logged_in?
-      session['twitter_user_name']
+      session['user_name']
     else
       nil
     end
@@ -55,7 +59,7 @@ class MainApp < Sinatra::Base
 
   def find_user
     if logged_in? && User.exists?
-      return User.where(login_id: session['twitter_user_id']).first
+      return User.where(login_id: session['uid']).first
     else
       nil
     end
@@ -63,7 +67,7 @@ class MainApp < Sinatra::Base
 
   def create_user(nickname)
     if logged_in?
-      User.create(login_id: session['twitter_user_id'], name: nickname)
+      User.create(login_id: session['uid'], name: nickname)
     end
   end
 
@@ -71,16 +75,14 @@ class MainApp < Sinatra::Base
     if !Tweet.exists?
       nil
     elsif logged_in?
-      Tweet.where(user_id: session['twitter_user_id']).all
+      Tweet.where(user_id: session['uid']).all
     else
       Tweet.all
     end
   end
 
   def find_tweet(id)
-    if !Tweet.exists?
-      return nil
-    end
+    return nil unless Tweet.exists?
 
     Tweet.find(id)
   end
@@ -89,7 +91,7 @@ class MainApp < Sinatra::Base
     if !logged_in? || tweet == nil
       false
     else
-      tweet.user_id == session['twitter_user_id']
+      tweet.user_id == session['uid']
     end
   end
 
@@ -114,18 +116,52 @@ class MainApp < Sinatra::Base
   # Twitter認証成功時に呼ばれる
   get '/auth/twitter/callback' do
     auth = request.env['omniauth.auth']
-    session['twitter_user_name'] = auth['info']['nickname']
-    session['twitter_user_id'] = auth['uid']
+    session['user_name'] = auth['info']['nickname']
+    session['uid'] = auth['provider'] + auth['uid']
     redirect '/'
   end
 
+  # Googlel-OAuth2認証成功時に呼ばれる
+  get '/auth/google_oauth2/callback' do
+    auth = request.env['omniauth.auth']
+    #DebugLog.info auth.to_yaml
+    session['user_name'] = auth['info']['name']
+    session['uid'] = auth['provider'] + auth['uid']
+    redirect '/'
+  end
+
+  # Dropbox認証成功時に呼ばれる
+  get '/auth/dropbox/callback' do
+    auth = request.env['omniauth.auth']
+    #DebugLog.info auth.to_yaml
+    #DebugLog.info params.to_yaml
+    session['user_name'] = auth['info']['name']
+    session['uid'] = auth['provider'] + auth['uid'].to_s
+    dropbox_session = DropboxSession.new(ENV['DROPBOX_APP_KEY'], ENV['DROPBOX_APP_SECRET'])
+    dropbox_session.get_request_token
+    dropbox_session.set_access_token(auth[:credentials][:token], auth[:credentials][:secret])
+    #dropbox_session.authorize(params)
+    session[:dropbox_session] = dropbox_session.serialize
+    redirect '/dropbox'
+  end
+
   def logout
-    session['twitter_user_name'] = nil
-    session['twitter_user_id'] = nil
+    session['user_name'] = nil
+    session['uid'] = nil
+    session[:dropbox_session] = nil
   end
 
   def logged_in?
-    session['twitter_user_name'] != nil && session['twitter_user_id'] != nil
+    session['user_name'] != nil && session['uid'] != nil
+  end
+
+  def dropbox_authorized?
+    #logged_in? && DropboxSession.deserialize(session).authorized?
+    if !logged_in? || session[:dropbox_session] == nil
+      false
+    else
+      DropboxSession.deserialize(session[:dropbox_session]).authorized?
+    end
   end
 
   get '/logout' do
@@ -135,7 +171,7 @@ class MainApp < Sinatra::Base
 
   get '/users/*/edit' do
     if logged_in?
-      haml :edit_account, {}, :user_id => session['twitter_user_id'], :nickname => find_nickname
+      haml :edit_account, {}, :user_id => session['uid'], :nickname => find_nickname
     else
       redirect '/'
     end
@@ -145,7 +181,7 @@ class MainApp < Sinatra::Base
     user_id = params[:user_id]
     redirect_url = "/users/#{user_id}/edit"
 
-    if !logged_in? || user_id != session['twitter_user_id']
+    if !logged_in? || user_id != session['uid']
       redirect redirect_url
     end
 
@@ -169,9 +205,7 @@ class MainApp < Sinatra::Base
   end
 
   post '/tweet' do
-    if !logged_in?
-      redirect '/'
-    end
+    redirect '/' unless logged_in?
 
     tweet = params[:post][:tweet]
 
@@ -179,7 +213,7 @@ class MainApp < Sinatra::Base
       redirect '/'
     end
 
-    Tweet.create(user_id: session['twitter_user_id'], user_name: session['twitter_user_name'], time: Time.now, message: tweet)
+    Tweet.create(user_id: session['uid'], user_name: session['user_name'], time: Time.now, message: tweet)
 
     redirect '/'
   end
@@ -201,6 +235,37 @@ class MainApp < Sinatra::Base
 
   get '/camera' do
     haml :play_camera
+  end
+
+  get '/drive' do
+    haml :play_drive
+  end
+
+  get '/dropbox' do
+    redirect '/' unless dropbox_authorized?
+    haml :play_dropbox, {}, :message => nil
+  end
+
+  post '/dropbox/upload' do
+    redirect '/dropbox' unless dropbox_authorized?
+    dropbox_session = DropboxSession.deserialize(session[:dropbox_session])
+
+    # ACCESS_TYPE should be ':dropbox' or ':app_folder' as configured for your app
+    DROPBOX_ACCESS_TYPE = :app_folder
+    client = DropboxClient.new(dropbox_session, DROPBOX_ACCESS_TYPE)
+    puts "linked account:", client.account_info().inspect
+
+    file = open('working-draft.txt')
+    target_file = params[:post][:filename]
+    if target_file == nil || target_file == ''
+      redirect '/dropbox'
+    end
+    target_path = '/' + target_file
+    response = client.put_file(target_path, file)
+    puts "uploaded:", response.inspect
+    file_metadata = client.metadata(target_path)
+    puts "metadata:", file_metadata.inspect
+    haml :play_dropbox, {}, :message => 'This is the metadata: ' + file_metadata.inspect
   end
 
   # 無効なパスはすべてルートへ転送

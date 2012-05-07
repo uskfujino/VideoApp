@@ -1,0 +1,14 @@
+.btn-group
+  %a.btn.btn-primary.dropdown-toggle(data-toggle='dropdown' href='#')
+    Signin
+    %span.caret
+  %ul.dropdown-menu
+    %li
+      %a(href='/auth/twitter')
+        with Twitter account
+    %li
+      %a(href='/auth/google_oauth2')
+        with Google account
+    %li
+      %a(href='/auth/dropbox')
+        with Dropbox account

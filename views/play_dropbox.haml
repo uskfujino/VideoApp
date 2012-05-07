@@ -1,0 +1,27 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Dropbox Test
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %script(src='../js/jquery.js')
+    %script(src='../js/bootstrap.js')
+  %body
+    = topbar
+    .container
+      .row
+        .span6
+          - if message
+            %h3= message
+          /%button.btn.btn-primary(href='/dropbox/upload' style='margin-top: 5px') Upload
+          /%a(href='/dropbox/upload') Upload
+          %form.form-horizontal.post(action='/dropbox/upload' method='post')
+            %fieldset
+              .control-group
+                %label.control-label(for='filename') File Name :
+                .controls
+                  %input.input-xlarge(id='filename' name='post[filename]' type='text')
+              .form-actions
+                %button.btn.btn-primary(type='submit') Create
+    %footer
