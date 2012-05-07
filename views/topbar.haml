@@ -13,6 +13,10 @@
           %li
             %a(href='/camera') Camera
           %li
+            %a(href='/drive') Drive
+          %li
+            %a(href='/dropbox') Dropbox
+          %li
             %a(href='/about') About
           %li
             %a(href='/contact') Contact
@@ -23,9 +27,11 @@
           %ul.nav.pull-left
             =dropdown
         - else
-          /%a.btn.btn-primary.pull-right(href='/auth/twitter' style='margin-right: 30px')
-          %a.btn.btn-primary.pull-right(href='/auth/twitter')
-            %i.icon-user.icon-white
-            Sign in with twitter account
-          /%p.navbar-text.pull-right
-          /  %a(href='/auth/twitter') Login with twitter account
+          %ul.nav.pull-left
+            =signin_dropdown
+          /%a.btn.btn-primary.pull-right(href='/auth/twitter')
+          /  %i.icon-user.icon-white
+          /  Sign in with twitter account
+          /%a.btn.btn-primary.pull-right(href='/auth/google_oauth2')
+          /  %i.icon-user.icon-white
+          /  Sign in with google account
