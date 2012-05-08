@@ -255,7 +255,7 @@ class MainApp < Sinatra::Base
     client = DropboxClient.new(dropbox_session, DROPBOX_ACCESS_TYPE)
     puts "linked account:", client.account_info().inspect
 
-    file = open('working-draft.txt')
+    file = open('./public/working-draft.txt')
     target_file = params[:post][:filename]
     if target_file == nil || target_file == ''
       redirect '/dropbox'
