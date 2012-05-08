@@ -12,10 +12,6 @@
     .container
       .row
         .span6
-          - if message
-            %h3= message
-          /%button.btn.btn-primary(href='/dropbox/upload' style='margin-top: 5px') Upload
-          /%a(href='/dropbox/upload') Upload
           %form.form-horizontal.post(action='/dropbox/upload' method='post')
             %fieldset
               .control-group
@@ -24,4 +20,10 @@
                   %input.input-xlarge(id='filename' name='post[filename]' type='text')
               .form-actions
                 %button.btn.btn-primary(type='submit') Create
+        .span6
+          %form.well.form-search(action='/dropbox' method='get')
+            %input.input-medium.search-query(id='query' name='query' type='text' placeholder='Input Query...')
+            %button.btn(type='submit') Search
+          = myfolder
     %footer
+      

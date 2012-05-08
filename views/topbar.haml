@@ -3,11 +3,11 @@
     /.container-fluid
     .container
       /%a.btn.btn-navbar(data-toggle='collapse' data-target='.nav-collapse')
-      %a.brand(href='/') This is my sandbox application
+      %a.brand(href='/') Sandbox apps :
       .nav-collapse
         %ul.nav
           %li
-            %a(href='/') Home
+            %a(href='/') Tweet
           %li
             %a(href='/canvas') Canvas
           %li
@@ -16,10 +16,6 @@
             %a(href='/drive') Drive
           %li
             %a(href='/dropbox') Dropbox
-          %li
-            %a(href='/about') About
-          %li
-            %a(href='/contact') Contact
           - if nickname != nil
             %li
               %a(href='/logout') Logout

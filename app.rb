@@ -241,9 +241,19 @@ class MainApp < Sinatra::Base
     haml :play_drive
   end
 
+  DROPBOX_ACCESS_TYPE = :app_folder
+
   get '/dropbox' do
     redirect '/' unless dropbox_authorized?
-    haml :play_dropbox, {}, :message => nil
+    dropbox_session = DropboxSession.deserialize(session[:dropbox_session])
+    client = DropboxClient.new(dropbox_session, DROPBOX_ACCESS_TYPE)
+    if params[:query]
+      search_result = client.search('/', params[:query], 1000)
+    else
+      search_result = client.search('/', 'txt', 1000)
+    end
+    myfolder = haml :myfolder, {}, :search_result => search_result
+    haml :play_dropbox, {}, :myfolder => myfolder
   end
 
   post '/dropbox/upload' do
@@ -251,7 +261,6 @@ class MainApp < Sinatra::Base
     dropbox_session = DropboxSession.deserialize(session[:dropbox_session])
 
     # ACCESS_TYPE should be ':dropbox' or ':app_folder' as configured for your app
-    DROPBOX_ACCESS_TYPE = :app_folder
     client = DropboxClient.new(dropbox_session, DROPBOX_ACCESS_TYPE)
     puts "linked account:", client.account_info().inspect
 
@@ -265,7 +274,8 @@ class MainApp < Sinatra::Base
     puts "uploaded:", response.inspect
     file_metadata = client.metadata(target_path)
     puts "metadata:", file_metadata.inspect
-    haml :play_dropbox, {}, :message => 'This is the metadata: ' + file_metadata.inspect
+
+    redirect '/dropbox'
   end
 
   # 無効なパスはすべてルートへ転送
