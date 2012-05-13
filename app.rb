@@ -1,8 +1,9 @@
 require './config/initializers/mongodb'
-#require './config/initializers/pusher'
+require './config/initializers/pusher'
 require './models/user'
 require './models/tweet'
 require './models/session'
+require './models/channel'
 require 'dropbox_sdk'
 require 'logger'
 require 'pp'
@@ -145,6 +146,35 @@ class MainApp < Sinatra::Base
     redirect '/dropbox'
   end
 
+  # Pusher認証処理
+  post '/pusher/auth' do
+    puts '/pusher/auth called'
+
+    redirect '/' unless logged_in?
+
+    puts params[:channel_name]
+    puts params[:socket_id]
+
+    ret = Pusher[params[:channel_name]].authenticate(params[:socket_id]).to_json
+
+    puts ret
+
+    ret
+=begin
+    puts params['socket_id'] + ':' + params['channel_name']
+
+    pusher_signature = HMAC::SHA256.hexdigest(Pusher.secret, params['socket_id'] + ':' + params['channel_name'])
+
+    puts pusher_signature
+
+    auth = Pusher.key + ':' + pusher_signature
+
+    puts auth
+
+    {auth: auth}.to_json
+=end
+  end
+
   def logout
     session['user_name'] = nil
     session['uid'] = nil
@@ -234,7 +264,33 @@ class MainApp < Sinatra::Base
   end
 
   get '/camera' do
-    haml :play_camera
+    haml :play_camera, {}, :pusher_key => Pusher.key, :channel_id => nil
+  end
+
+  post '/camera' do
+    redirect '/camera' unless logged_in?
+
+    channel_name = params[:post][:channel_name]
+
+    if channel_name == '' || channel_name == nil
+      redirect '/camera'
+    end
+
+    channel = Channel.create(name: channel_name)
+
+    haml :play_camera, {}, :pusher_key => Pusher.key, :channel_id => channel.id
+  end
+
+  def find_channels
+    Channel.all if Channel.exists?
+  end
+  
+  def find_channel channel_id
+    Channel.where(id: channel_id).first if Channel.exists?
+  end
+
+  get '/channel' do
+    haml :channel, {}, :pusher_key => Pusher.key, :channels => find_channels
   end
 
   get '/drive' do

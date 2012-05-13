@@ -1,0 +1,43 @@
+!!! 5
+%html(lang="en")
+  %head
+    %title Camera
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
+    %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
+    %script(src='http://js.pusher.com/1.11/pusher.min.js')
+    %script(src='../js/jquery.js')
+    %script(src='../js/bootstrap.js')
+    %script(src='assets/test_video.js')
+    /%script(src='../js/test_video.js')
+  %body
+    = topbar
+    .container
+      .row
+        .span6
+          %canvas(id='videoScreen')
+          %br
+          %input.input-xlarge(id='channelId' type='text' placeholder='Channel ID' value='')
+          %button.btn.btn-primary(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}')") Start
+        - if channels
+          .span6
+            %table.table.table-striped
+              %thead
+                %tr
+                  %td
+                    No.
+                  %td
+                    Channel Name
+                  %td
+                    Channel ID
+              %tbody
+                - file_count = 0
+                - channels.reverse.each do |channel|
+                  %tr
+                    %td
+                      %p= file_count += 1
+                    %td
+                      %p= hbr channel.name
+                    %td
+                      %p= hbr channel.id
+    %footer

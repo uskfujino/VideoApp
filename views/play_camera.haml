@@ -11,14 +11,28 @@
     /%script(src='assets/underscore.js')
     /%script(src='assets/backbone.js')
     %script(src='assets/test_camera.js')
+    /%script(src='../js/test_camera.js')
   %body
     = topbar
     .container
       .row
         .span6
-          %canvas(id='screen')
+          %canvas(id='cameraScreen')
           %br
           %button.btn.btn-primary(style='margin-top: 5px' onclick='cameraApp.mirrorHorizontally()') Reverse
+          %button.btn.btn-primary(style='margin-top: 5px' onclick="cameraApp.startBroadcast('#{pusher_key}', '#{channel_id}')") Start Broadcast
+          %button.btn.btn-primary(style='margin-top: 5px' onclick="cameraApp.stopBroadcast('#{channel_id}')") Stop Broadcast
+          %button.btn.btn-primary(style='margin-top: 5px' onclick='cameraApp.debugger.hello()') Hello
+          %button.btn.btn-primary(style='margin-top: 5px' onclick='cameraApp.debugger.sendImage()') Send Image
           /%video(autoplay)
           %video(autoplay style='display:none')
+        .span6
+          %form.form-horizontal.post(action='/camera' method='post')
+            %fieldset
+              .control-group
+                %label.control-label(for='Channel Name') Channel Name :
+                .controls
+                  %input.input-xlarge(id='channelName' name='post[channel_name]' type='text')
+              .form-actions
+                %button.btn.btn-primary(type='submit') Create
     %footer
