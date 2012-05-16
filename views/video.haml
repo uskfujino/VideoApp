@@ -1,0 +1,33 @@
+.span6
+  %canvas(id='videoScreen')
+  %br
+  /%input.input-xlarge(id='channelId' type='text' placeholder='Channel ID' value='')
+  /%button.btn.btn-primary(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}')") Start
+- if channels
+  .span4
+    :javascript
+      $('#channels').scrollspy();
+    %table.table.table-striped(id='channels' data-spy='scroll')
+      %thead
+        %tr
+          %td
+            No.
+          %td
+            Channel Name
+          %td(style='display:none')
+            Channel ID
+      %tbody
+        - file_count = 0
+        - channels.reverse.each do |channel|
+          %tr
+            %td
+              %p= file_count += 1
+            %td
+              %p= hbr channel.name
+            %td
+              %button.btn(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}', '#{channel.id}')") Watch
+            %td(style='display:none')
+              %p= hbr channel.id
+              /%button.btn.btn-primary(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}', '#{channel.id}')") Watch
+            /%td
+            /  %p= hbr channel.id

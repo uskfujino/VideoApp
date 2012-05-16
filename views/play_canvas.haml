@@ -9,12 +9,57 @@
     %script(src='../js/jquery.js')
     %script(src='../js/bootstrap.js')
     %script(src='assets/test_canvas.js')
+    %script(src='assets/edit_canvas.js')
+    :javascript
+      try {
+        //canvasEditor.src = ctx;
+        //canvasEditor.ctx = ctx;
+        window.onload = function () {
+          canvasApp.init();
+          canvasEditor.init(canvasApp);
+        }
+
+        function getComment() {
+          return $("#comment").get(0).value;
+        }
+      } catch (ex) {
+        alert(ex);
+      }
   %body
     = topbar
     .container
+      .row(id='testAlert' style='display:none')
+        .span6
+          /.alert.fade.in(id='testAlertMessage')
+          .alert.fade.in
+            %strong(id='testAlertMessage')
+            %button.close(data-dismiss='alert') x
+        :javascript
+          function showAlert() {
+            try {
+              $('#testAlert').get(0).style.display = 'inline';
+              $('#testAlertMessage').text('Test')
+              //$('#testAlertMessage').append($('<strong>Test</strong>'))
+            } catch (ex) {
+              alert(ex);
+            }
+          }
       .row
         .span6
-          %canvas(id='canvas')
+          %canvas(id='front_canvas')
+          %canvas(id='back_canvas' style='display:none')
           %br
-          %button.btn.btn-primary(style='margin-top: 5px' onclick='clearCanvas();') Clear
+          %button.btn.btn-primary(style='margin-top: 5px' onclick='canvasApp.init();') Clear
+          %button.btn(onclick='showAlert()') Show Alert
+      .row
+        .span4
+          %table.table
+            %tbody
+              %tr
+                %td
+                  %input.input-xlarge(id='comment' type='text' placeholder='Comment')
+                %td
+                  %button.btn.btn-primary(onclick="canvasEditor.comment(getComment())") Send
+                  /%button.btn.btn-primary(onclick="test()") Test
+                  /%button.btn.btn-primary(onclick="alert($("#comment").value)") Test
     %footer

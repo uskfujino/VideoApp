@@ -29,9 +29,9 @@ videoApp.initialize = () ->
   catch ex
     alert(ex)
 
-videoApp.initChannel = (pusherKey) ->
+videoApp.initChannel = (pusherKey, channelId) ->
   try
-    channelId = document.getElementById('channelId').value
+    #channelId = document.getElementById('channelId').value
     if !channelId
       alert 'Channel ID is empty'
       return

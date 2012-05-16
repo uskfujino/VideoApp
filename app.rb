@@ -263,11 +263,19 @@ class MainApp < Sinatra::Base
     haml :play_canvas
   end
 
+  def create_camera(channel)
+    camera = haml :camera, {}, :pusher_key => Pusher.key, :channel => channel
+    video = haml :video, {}, :pusher_key => Pusher.key, :channels => find_channels
+    haml :play_camera, {}, :camera => camera, :video => video, :channel => channel
+  end
+  
   get '/camera' do
-    haml :play_camera, {}, :pusher_key => Pusher.key, :channel_id => nil
+    puts 'get /camera called'
+    create_camera nil
   end
 
   post '/camera' do
+    puts 'post /camera called'
     redirect '/camera' unless logged_in?
 
     channel_name = params[:post][:channel_name]
@@ -276,9 +284,7 @@ class MainApp < Sinatra::Base
       redirect '/camera'
     end
 
-    channel = Channel.create(name: channel_name)
-
-    haml :play_camera, {}, :pusher_key => Pusher.key, :channel_id => channel.id
+    create_camera Channel.create(name: channel_name)
   end
 
   def find_channels
@@ -336,7 +342,7 @@ class MainApp < Sinatra::Base
 
   # 無効なパスはすべてルートへ転送
   get '/*' do
-    puts '#Unknown url get'
+    puts '#Unknown url get : ' + request.url
     redirect '/'
   end
 end

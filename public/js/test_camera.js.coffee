@@ -1,3 +1,16 @@
+class MessageHandler
+  constructor: () ->
+
+  showWarning: (message) ->
+    $('#warningDisplay').get(0).style.display='inline'
+    $('#warningDisplayMessage').text(message)
+
+  showError: (message) ->
+    $('#errorDisplay').get(0).style.display='inline'
+    $('#errorDisplayMessage').text(message)
+
+messageHandler = new MessageHandler()
+
 cameraApp = {
   canvas: {}
   ctx: {}
@@ -31,7 +44,8 @@ cameraApp.initialize = () ->
         video.src = stream
       )
     else
-      alert('Your bouser does not support camera function')
+      #alert 'Your bouser does not support camera function'
+      messageHandler.showWarning 'Your bouser does not support camera function'
       return
     
     canvas = document.getElementById('cameraScreen')
