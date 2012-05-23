@@ -29,6 +29,8 @@
                   %td
                     Channel Name
                   %td
+                    Owner
+                  %td
                     Channel ID
               %tbody
                 - file_count = 0
@@ -38,6 +40,8 @@
                       %p= file_count += 1
                     %td
                       %p= hbr channel.name
+                    %td
+                      %p= hbr channel.owner_name
                     %td
                       %p= hbr channel.id
     %footer

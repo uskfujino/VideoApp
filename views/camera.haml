@@ -4,15 +4,15 @@
   /%button.btn.btn-primary(style='margin-top: 5px' onclick='cameraApp.mirrorHorizontally()') Reverse
   :javascript
     var cameraApp = {};
-    window.onload = function () {
+    WindowUtil.addOnload(function () {
       try {
         cameraApp = new CameraApp();
         //cameraApp.draw();
       } catch (ex) {
-        messageHandler.showError('Cannot initialize camera. Please retry.');
-        messageHandler.showDebugMessage('window.onload callback : ' + ex);
+        MessageHandler.showError('Cannot initialize camera. Please retry.');
+        MessageHandler.showDebugMessage('window.onload callback : ' + ex);
       }
-    }
+    });
   - if channel != nil && channel.id != nil
     /%button.btn.btn-primary(style='margin-top: 5px' onclick="cameraApp.startBroadcast('#{pusher_key}', '#{channel.id}')") Start Broadcast
     /%button.btn.btn-primary(style='margin-top: 5px' onclick="cameraApp.stopBroadcast('#{channel.id}')") Stop Broadcast

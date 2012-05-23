@@ -4,9 +4,22 @@
   /%input.input-xlarge(id='channelId' type='text' placeholder='Channel ID' value='')
   /%button.btn.btn-primary(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}')") Start
 - if channels
-  .span4
+  .span6
     :javascript
-      $('#channels').scrollspy();
+      try {
+        $('#channels').scrollspy();
+        var videoApp = {};
+        WindowUtil.addOnload(function () {
+          try {
+            videoApp = new VideoApp();
+          } catch (ex) {
+            MessageHandler.showError('Video initialize camera. Please retry.');
+            MessageHandler.showDebugMessage('window.onload callback : ' + ex);
+          }
+        });
+      } catch (ex) {
+        MessageHandler.showError(ex);
+      }
     %table.table.table-striped(id='channels' data-spy='scroll')
       %thead
         %tr
@@ -14,6 +27,8 @@
             No.
           %td
             Channel Name
+          %td
+            Owner
           %td(style='display:none')
             Channel ID
       %tbody
@@ -25,7 +40,11 @@
             %td
               %p= hbr channel.name
             %td
+              %p= hbr channel.owner_name
+            %td
               %button.btn(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}', '#{channel.id}')") Watch
+              - if channel.owner_id == uid
+                %button.btn(style='margin-top: 5px' onclick="videoApp.deleteChannel('#{pusher_key}', '#{channel.id}')") Delete
             %td(style='display:none')
               %p= hbr channel.id
               /%button.btn.btn-primary(style='margin-top: 5px' onclick="videoApp.initChannel('#{pusher_key}', '#{channel.id}')") Watch

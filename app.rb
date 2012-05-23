@@ -265,7 +265,7 @@ class MainApp < Sinatra::Base
 
   def create_camera(channel)
     camera = haml :camera, {}, :pusher_key => Pusher.key, :channel => channel
-    video = haml :video, {}, :pusher_key => Pusher.key, :channels => find_channels
+    video = haml :video, {}, :pusher_key => Pusher.key, :channels => find_channels, :uid => session['uid']
     haml :play_camera, {}, :camera => camera, :video => video, :channel => channel
   end
   
@@ -284,7 +284,7 @@ class MainApp < Sinatra::Base
       redirect '/camera'
     end
 
-    create_camera Channel.create(name: channel_name)
+    create_camera Channel.create(name: channel_name, owner_id: session['uid'], owner_name: session['user_name'])
   end
 
   def find_channels

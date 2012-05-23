@@ -8,16 +8,22 @@
     %script(src='http://js.pusher.com/1.11/pusher.min.js')
     %script(src='../js/jquery.js')
     %script(src='../js/bootstrap.js')
-    %script(src='assets/test_canvas.js')
-    %script(src='assets/edit_canvas.js')
+    %script(src='assets/window_util.js')
+    %script(src='assets/message_handler.js')
+    /%script(src='assets/test_canvas.js')
+    /%script(src='assets/edit_canvas.js')
+    %script(src='assets/canvas_app.js')
+    %script(src='assets/canvas_editor.js')
     :javascript
       try {
-        //canvasEditor.src = ctx;
-        //canvasEditor.ctx = ctx;
-        window.onload = function () {
-          canvasApp.init();
-          canvasEditor.init(canvasApp);
-        }
+        var canvasApp = {}
+        var canvasEditor = {}
+        WindowUtil.addOnload(function () {
+          canvasApp = new CanvasApp();
+          MessageHandler.showDebugMessage('CanvasApp initialized');
+          canvasEditor = new CanvasEditor(canvasApp);
+          MessageHandler.showDebugMessage('CanvasEditor initialized');
+        });
 
         function getComment() {
           return $("#comment").get(0).value;
@@ -28,6 +34,12 @@
   %body
     = topbar
     .container
+      .row(id='debugDisplay' style='display:none')
+        .alert.fade.in(id='debugDisplayMessage')
+      .row(id='warningDisplay' style='display:none')
+        .alert.fade.in(id='warningDisplayMessage')
+      .row(id='errorDisplay' style='display:none')
+        .alert.alert-block.alert-error.fade.in(id='errorDisplayMessage')
       .row(id='testAlert' style='display:none')
         .span6
           /.alert.fade.in(id='testAlertMessage')
@@ -49,7 +61,7 @@
           %canvas(id='front_canvas')
           %canvas(id='back_canvas' style='display:none')
           %br
-          %button.btn.btn-primary(style='margin-top: 5px' onclick='canvasApp.init();') Clear
+          %button.btn.btn-primary(style='margin-top: 5px' onclick='canvasApp.clear();') Clear
           %button.btn(onclick='showAlert()') Show Alert
       .row
         .span4
