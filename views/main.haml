@@ -5,58 +5,10 @@
     %link{:rel => 'stylesheet', :href => '../css/bootstrap.css', :type => "text/css"}
     %link{:rel => 'stylesheet', :href => '../css/bootstrap-responsive.css', :type => "text/css"}
     %link{:rel => 'stylesheet', :href => '../css/mydocs.css', :type => "text/css"}
-    %script(src='http://js.pusher.com/1.11/pusher.min.js')
     %script(src='../js/jquery.js')
-    %script(src='../js/jquery.autosize.js')
-    %script(src='../js/jquery.textCounter.js')
     %script(src='../js/bootstrap.js')
   %body
     = topbar
-    :javascript
-      try {
-        var pusher = new Pusher('#{pusher_key}')
-        var channel = pusher.subscribe('my_channel')
-        channel.bind('my_event', function(data) {
-          alert('An event was triggerd with message: ' + data.message);
-        });
-
-        $(document).ready(function() {
-          $('textarea').autosize();
-        });
-
-        $(function() {
-          $('#tweet_counter').textCounter({
-            target: '#tweet', // target textarea
-            count: 140,
-            alertAt: 20,
-            warnAt: 10,
-            stopAtLimit: false
-          });
-        });
-      } catch (ex) {
-        alert(ex);
-      }
-    :css
-      .tcAlert { color: orange; }
-      .tcWarn { color: red; }
-
-      textarea {
-        resize: vertical;
-        min-width: 200px;
-        max-width: 500px;
-        min-height: 20px;
-        max-height: 200px;
-      }
     .container
       .row
-        .span3
-          %form.form.post(action='/tweet' method='post')
-            %fieldset
-              %h3= nickname
-              %textarea.input-xlarge(id='tweet' name='post[tweet]' type='text' placeholder='Tweet...' rows='3' style='margin-left: 0px; margin-right: 0px; width: 270px; margin-top: 0px; margin-bottom: 0px; height: 20px;')
-              %p.help-block.pull-right
-                %span(id='tweet_counter' style='margin-top: 5px')
-                %button.btn.btn-primary(type='submit' style='margin-top: 5px') Tweet
-        .span6
-          = tweet_page
     %footer
